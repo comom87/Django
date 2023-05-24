@@ -1,0 +1,17 @@
+<h1>{{ question.question_text }}</h1>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+<!-- 에러를 체크하는 로직은 vote() 뷰 함수에 있습니다.
+     vote() 뷰 함수에서 익셉션이 발생하면 error_message를 담아서 detail.html 템플릿을 렌더링하고,
+     그에 따라 detail.html 템플릿에서 에러 메시지를 굵은 글자로 보여주게 됩니다. -->
+
+<form action="{% url 'polls:vote' question.id %}" method="post">
+<!-- 폼에 입력된 데이터는 POST 방식으로 보냅니다. 서버 측의 데이터를 변경하는 경우, 일반적으로 GET이 아니라 POST 방식을 사용합니다.
+     <form action> 속성에 {% url %} 템플릿 태그를 사용하여 받을 곳의 URL을 polls:vote로 지정하였습니다.-->
+{% csrf_token %}
+{% for choice in question.choice_set.all %}
+    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" />
+    <label for="choice{{ forloop.counter}}">{{ choice.choice_text }}</label><br />
+{% endfor %}
+<input type="submit" value="Vote" />
+</form>
