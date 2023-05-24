@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirm Delete{% endblock %}
+
+{% block content %}
+<form action="" method="post">
+    {% csrf_token %}
+    <div class="alert alert-danger">Do you want to delete Bookmark "{{object}}"?</div>
+    <input type="submit" value="Delete" class="btn btn-danger">
+</form>
+{% endblock %}
+
+<!-- bookmark_confirm_delete.html: 삭제할 때는 확인이 필요하기 때문에 이와 같은 이름 사용 -->
