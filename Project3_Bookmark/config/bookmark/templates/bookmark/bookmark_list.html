@@ -32,6 +32,7 @@
 </table>
 {% endblock %}
 
+<!-- 클래스형 뷰에서 paginate_by 값을 사용하면 자동으로 Page 객체를 생성 -->
 {% block pagination %}
 {% if is_paginated %}
 <ul class="pagination justify-content-center pagination-sm">

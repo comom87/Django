@@ -9,7 +9,7 @@
 {% block title %}Bookmark Add{% endblock %}
 
 {% block content %}
-<form action="" method="post">
+<form action="" method="post"> <!-- form 태그는 html로부터 서버로 자료를 전달하기 위해 사용하는 코드/action 메서드는 자료를 전달할 대상 페이지, 비워둘 경우 현재 페이지로 전달/method는 HTTP 메서드 종류를 설정 -->
     {% csrf_token %} <!-- csrf_token: CSRF(Cross Site Request Forgery) 공격을 막기 위한 용도 -->
     {{form.as_p}} <!-- form.as_p 클래스형 뷰의 옵션 값으로 설정한 필드를 출력하는데 각 필드 폼 태그들을 <p>로 감싸 출력하는 코드 -->
     <input type="submit" value="Add" class="btn btn-info btn-sm">

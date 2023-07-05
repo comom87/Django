@@ -3,6 +3,7 @@
 {% block title %}Detail{% endblock %}
 
 {% block content %}
+<!-- 제네릭 뷰에서는 모델의 객체가 하나일 경우 object이라는 변수로 전달 -->
 {{object.site_name}}<br/>
 {{object.url}}
 {% endblock %}

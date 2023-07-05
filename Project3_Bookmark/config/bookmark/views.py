@@ -13,9 +13,8 @@ class BookmarkCreateView(CreateView):
     fields = ['site_name', 'url'] # fields: 어떤 변수를 입력받을 것인지 설정하는 부분
     success_url = reverse_lazy('list') # success_url: 글쓰기를 완료하고 이동할 페이지
     template_name_suffix = '_create' # template_name_suffix: 사용할 템플릿의 접미사만 변경하는 설정값
-
-    # 기본으로 설정되어 있는 템플릿 이름들은 모델명_xxx
-    # ex) CreateView와 UpdateView는 form이 접미사
+                                     # 기본으로 설정되어 있는 템플릿 이름들은 모델명_xxx
+                                     # ex) CreateView와 UpdateView는 form이 접미사
 
 class BookmarkDetailView(DetailView):
     model = Bookmark
