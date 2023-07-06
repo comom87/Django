@@ -26,5 +26,5 @@ class Photo(models.Model):
     def __str__(self):
         return self.author.username + " " + self.created.strftime("%Y-%m-%d %H:%M:%S")
     
-    def get_absolute_url(self):
+    def get_absolute_url(self): # get_absolute_url: 객체를 추가하거나 수정했을 때 이동할 주소를 위해 호출되기도 하고 템플릿에서 작성된 주소의 화면으로 이동하는 링크를 만들 때 호출
         return reverse('photo:photo_detail', args=[str(self.id)]) # reverse 메서드: URL 패턴 이름을 가지고 해당 패턴을 찾아 주소를 만들어주는 함수

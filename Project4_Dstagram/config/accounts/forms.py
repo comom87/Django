@@ -13,7 +13,7 @@ class RegisterForm(forms.ModelForm):
     
     # clean_password2: clean_필드명 형태의 메서드
     #                  이런 형태의 메서드들은 각 필드의 clean 메서드가 호출된 후에 호출되는 메서드들
-    #                  특별한 유효성 검사나 조작을 하고 싶을 때 만들어서 
+    #                  특별한 유효성 검사나 조작을 하고 싶을 때 만들어서 사용
     #                  clean_필드명 형태의 메서드에서 해당 필드의 값을 사용할 때는 꼭 cleaned_data에서 필드 값을 찾아서 사용해야 함
     #                  cleaned_data는 이전 단계까지 기본 유효성 검사같은 처리를 마친 값
     def clean_password2(self):
