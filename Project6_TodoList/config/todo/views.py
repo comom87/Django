@@ -20,10 +20,12 @@ def todo_fetch(request):
 #              저장할 때마다 전체 데이터를 지우고 다시 입력하는 방식 사용
 #              뷰를 호출할 때마다 데이터를 확인 없이 지우게 되면 문제가 생길 수 있으므로 전달된 데이터가 확실히 있을 때만 전체 데이터를 삭제
 @csrf_exempt
-@require_POST
+@require_POST # require_POST: POST 메서드로 접근했을 때만 동작
 def todo_save(request):
-    if request.body:
-        data = json.loads(request.body)
+    # print(request.body)
+    if request.body: # request.body: b'{"todos":[{"id":0,"title":"1","completed":false}]}'
+        data = json.loads(request.body) # data: {todo [{'id': 0, 'title': '1', 'completed': False}]}
+        # print(data)
         if 'todos' in data:
             todos = data['todos']
             Todo.objects.all().delete()
