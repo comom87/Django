@@ -1,22 +1,53 @@
 {% extends 'base.html' %}
+<!-- load 문은 extends 문 다음에 위치해야 한다. -->
 {% load pybo_filter %}
 
 {% block content %}
 <div class="container my-3">
+    <div class="row justify-content-between my-3"> <!-- justify-content-between: 양쪽 정렬 -->
+        <div class="col-2">
+            <select class="form-control so">
+                <option value="recent" {% if so == 'recent' %}selected{% endif %}>
+                    최신순
+                </option>
+                <option value="recommend" {% if so == 'recommend' %}selected{% endif %}>
+                    추천순
+                </option>
+                <option value="popular" {% if so == 'popular' %}selected{% endif %}>
+                    인기순
+                </option>
+            </select>
+        </div>
+        <div class="col-4 input-group">
+            <input type="text" class="form-control kw" value="{{ kw|default_if_none:'' }}">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" id="btn_search">찾기</button>
+            </div>
+        </div>
+    </div>
     <table class="table">
         <thead>
-            <tr class="thead-dark">
+            <tr class="text-center thead-dark"> <!-- text-center: th 엘리먼트를 가운데 정렬 -->
                 <th>번호</th>
-                <th>제목</th>
+                <th>추천</th>
+                <th style="width:50%">제목</th> <!-- style="width:50%": 제목의 너비가 전체에서 50%를 차지 -->
+                <th>글쓴이</th>
                 <th>작성 일시</th>
             </tr>
         </thead>
         <tbody>
             {% if question_list %}
             {% for question in question_list %}
-            <tr>
+            <tr class="text-center">
                 <td>{{ question_list.paginator.count|sub:question_list.start_index|sub:forloop.counter0|add:1 }}</td>
                 <td>
+                    {% if question.voter.all.count > 0 %}
+                    <span class="badge badge-warning px-2 py-1">
+                        {{ question.voter.all.count }}
+                    </span>
+                    {% endif %}
+                </td>
+                <td class="text-left"> <!-- text-left: 제목을 왼쪽 정렬 -->
                     <a href="{% url 'pybo:detail' question.id %}">
                         {{ question.subject }}
                         {% if question.answer_set.count > 0 %}
@@ -26,6 +57,7 @@
                         {% endif %}
                     </a>
                 </td>
+                <td>{{ question.author.username }}</td>
                 <td>{{ question.create_date }}</td>
             </tr>
             {% endfor %}
@@ -41,7 +73,7 @@
         <!-- 이전 페이지 -->
         {% if question_list.has_previous %}
         <li class="page-item">
-            <a class="page-link" href="?page={{ question_list.previous_page_number }}">이전</a>
+            <a class="page-link" data-page="{{ question_list.previous_page_number }}" href="#">이전</a>
         </li>
         {% else %}
         <li class="page-item disabled">
@@ -50,14 +82,16 @@
         {% endif %}
         <!-- 페이지 리스트 -->
         {% for page_number in question_list.paginator.page_range %}
-        {% if page_number >= question_list.number|add:-5 and page_number <= question_list.number|add:5 %}
+        <!-- |add:-5: 5만큼 빼라는 의미
+             |add:5: 5만큼 더하라는 의미 -->
+        {% if page_number >= question_list.number|add:-5 and page_number <= question_list.number|add:5 %} <!-- 페이지 번호가 현재 페이지 기준으로 좌우 5개씩 보이도록 만든다. question_list.number보다 5만큼 크거나 작은 값만 표시되도록 만든 것이다.-->
             {% if page_number == question_list.number %}
             <li class="page-item active" aria-current="page">
-                <a class="page-link" href="?page={{ page.number }}">{{ page_number }}</a>
+                <a class="page-link" data-page="{{ page.number }}" href="#">{{ page_number }}</a>
             </li>
             {% else %}
             <li class="page-item">
-                <a class="page-link" href="?page={{ page_number }}">{{ page_number }}</a>
+                <a class="page-link" data-page="{{ page_number }}" href="#">{{ page_number }}</a>
             </li>
             {% endif %}
         {% endif %}
@@ -65,7 +99,7 @@
         <!-- 다음 페이지 -->
         {% if question_list.has_next %}
         <li class="page-item">
-            <a class="page-link" href="?page={{ question_list.next_page_number }}">다음</a>
+            <a class="page-link" data-page="{{ question_list.next_page_number }}" href="#">다음</a>
         </li>
         {% else %}
         <li class="page-item disabled">
@@ -78,4 +112,38 @@
         질문 등록하기
     </a>
 </div>
+<!-- form 앨리먼트의 action 속성은 '폼이 전송되는 URL'이므로 질문 목록 URL인 "{% url 'index' %}"를 지정했다. -->
+<form id="searchForm" method="get" action="{% url 'index' %}">
+    <!-- kw와 page는 이전에 요청했던 값을 기억해야 하므로 value 속성에 그 값을 대입했는데, kw와 page값은 질문 목록 함수에서 전달받는다. -->
+    <input type="hidden" id="kw" name="kw" value="{{ kw|default_if_none:'' }}">
+    <input type="hidden" id="page" name="page" value="{{ page }}">
+    <input type="hidden" id="so" name="so" value="{{ so }}">
+</form>
+{% endblock %}
+
+{% block script %}
+<script tabindex="text/javascript">
+    $(document).ready(function() {
+        // class 속성이 page-link인 링크를 누르면 이 링크의 data-page 속성값을 읽어 searchForm의 page 필드에 그 값을 설정하여 폼을 요청하도록 했다.
+        $(".page-link").on('click', function() {
+            $("#page").val($(this).data("page"));
+            $("#searchForm").submit();
+        });
+
+        // 또한 검색 버튼을 누르면 검색 창에 입력된 값을 searchForm의 kw 필드에 설정하여 폼을 요청하도록 했다.
+        // 이때 검색 버튼을 누르는 경우는 새로운 검색 요청에 해당하므로 searchForm의 page 필드에 항상 1을 설정하여 폼을 요청하도록 했다.
+        $("#btn_search").on('click', function() {
+            $("#kw").val($(".kw").val());
+            $("#page").val(1);
+            $("#searchForm").submit();
+        });
+
+        // 정렬 조건에 해당하는 select의 값이 변경되면 그 값을 searchForm의 so 필드에 저장하여 searchForm을 요청한다.
+        $(".so").on('change', function() {
+            $("#so").val($(this).val());
+            $("#page").val(1);
+            $("#searchForm").submit();
+        });
+    })
+</script>
 {% endblock %}
