@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 
 from .models import *
+from cart.forms import AddProductFrom
 # Create your views here.
 # product_in_category: 카테고리 페이지
 #                      URL로부터 category_slug를 찾아서 현재 어느 카테고리를 보여주는 것인지 판단. 만약 선택한 카테고리가 없을 경우 전체 상품 목록을 노출
@@ -18,5 +19,6 @@ def product_in_category(request, category_slug=None):
 # product_detail: 제품 상세 뷰
 def product_detail(request, id, product_slug=None):
     product = get_object_or_404(Product, id=id, slug=product_slug)
+    add_to_cart = AddProductFrom(initial={'quantity': 1})
 
-    return render(request, 'shop/detail.html', {'product':product})
+    return render(request, 'shop/detail.html', {'product': product, 'add_to_cart': add_to_cart})

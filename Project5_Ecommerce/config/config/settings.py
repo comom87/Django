@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "shop.apps.ShopConfig",
+    "cart.apps.CartConfig",
+    "coupon.apps.CouponConfig",
     'django.contrib.sites', # 사이트의 정보 설정
     'allauth',
     'allauth.account', # account: 가입한 계정 관리
@@ -157,3 +159,5 @@ AUTHENTICATION_BACKENDS = (
 SITE_ID = 1
 
 LOGIN_REDIRECT_URL = '/'
+
+CART_ID = 'cart_in_session' # 세션 아이디
